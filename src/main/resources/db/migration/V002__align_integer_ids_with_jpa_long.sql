@@ -1,0 +1,74 @@
+-- Align PostgreSQL integer identity/FK columns with Java Long entity fields.
+-- This migration is required because V001 used SERIAL/INTEGER while JPA ids
+-- are mapped as Long/BIGINT. Do not edit already-applied migrations.
+
+ALTER TABLE companies DROP CONSTRAINT IF EXISTS companies_created_by_fkey;
+ALTER TABLE company_users DROP CONSTRAINT IF EXISTS company_users_company_id_fkey;
+ALTER TABLE company_users DROP CONSTRAINT IF EXISTS company_users_user_id_fkey;
+ALTER TABLE restaurants DROP CONSTRAINT IF EXISTS restaurants_company_id_fkey;
+ALTER TABLE restaurants DROP CONSTRAINT IF EXISTS restaurants_created_by_fkey;
+ALTER TABLE restaurant_users DROP CONSTRAINT IF EXISTS restaurant_users_restaurant_id_fkey;
+ALTER TABLE restaurant_users DROP CONSTRAINT IF EXISTS restaurant_users_user_id_fkey;
+ALTER TABLE restaurant_approval_requests DROP CONSTRAINT IF EXISTS restaurant_approval_requests_restaurant_id_fkey;
+ALTER TABLE restaurant_approval_requests DROP CONSTRAINT IF EXISTS restaurant_approval_requests_company_id_fkey;
+ALTER TABLE restaurant_approval_requests DROP CONSTRAINT IF EXISTS restaurant_approval_requests_requested_by_fkey;
+ALTER TABLE restaurant_approval_requests DROP CONSTRAINT IF EXISTS restaurant_approval_requests_reviewed_by_fkey;
+ALTER TABLE slug_history DROP CONSTRAINT IF EXISTS slug_history_restaurant_id_fkey;
+ALTER TABLE slug_change_requests DROP CONSTRAINT IF EXISTS slug_change_requests_restaurant_id_fkey;
+ALTER TABLE slug_change_requests DROP CONSTRAINT IF EXISTS slug_change_requests_requested_by_fkey;
+ALTER TABLE slug_change_requests DROP CONSTRAINT IF EXISTS slug_change_requests_reviewed_by_fkey;
+ALTER TABLE menu_versions DROP CONSTRAINT IF EXISTS menu_versions_restaurant_id_fkey;
+ALTER TABLE menu_versions DROP CONSTRAINT IF EXISTS menu_versions_created_by_fkey;
+ALTER TABLE menu_upload_limits DROP CONSTRAINT IF EXISTS menu_upload_limits_restaurant_id_fkey;
+ALTER TABLE pdf_rejection_reasons DROP CONSTRAINT IF EXISTS pdf_rejection_reasons_menu_version_id_fkey;
+ALTER TABLE pdf_rejection_reasons DROP CONSTRAINT IF EXISTS pdf_rejection_reasons_rejected_by_fkey;
+ALTER TABLE analytics_events DROP CONSTRAINT IF EXISTS analytics_events_restaurant_id_fkey;
+ALTER TABLE analytics_events DROP CONSTRAINT IF EXISTS analytics_events_company_id_fkey;
+ALTER TABLE audit_logs DROP CONSTRAINT IF EXISTS audit_logs_performed_by_fkey;
+ALTER TABLE login_sessions DROP CONSTRAINT IF EXISTS login_sessions_user_id_fkey;
+ALTER TABLE password_reset_tokens DROP CONSTRAINT IF EXISTS password_reset_tokens_user_id_fkey;
+ALTER TABLE email_verification_codes DROP CONSTRAINT IF EXISTS email_verification_codes_user_id_fkey;
+
+ALTER TABLE users ALTER COLUMN id TYPE BIGINT;
+ALTER TABLE companies ALTER COLUMN id TYPE BIGINT, ALTER COLUMN created_by TYPE BIGINT;
+ALTER TABLE company_users ALTER COLUMN id TYPE BIGINT, ALTER COLUMN company_id TYPE BIGINT, ALTER COLUMN user_id TYPE BIGINT;
+ALTER TABLE restaurants ALTER COLUMN id TYPE BIGINT, ALTER COLUMN company_id TYPE BIGINT, ALTER COLUMN created_by TYPE BIGINT;
+ALTER TABLE restaurant_users ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT, ALTER COLUMN user_id TYPE BIGINT;
+ALTER TABLE restaurant_approval_requests ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT, ALTER COLUMN company_id TYPE BIGINT, ALTER COLUMN requested_by TYPE BIGINT, ALTER COLUMN reviewed_by TYPE BIGINT;
+ALTER TABLE slug_history ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT;
+ALTER TABLE slug_change_requests ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT, ALTER COLUMN requested_by TYPE BIGINT, ALTER COLUMN reviewed_by TYPE BIGINT;
+ALTER TABLE menu_versions ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT, ALTER COLUMN created_by TYPE BIGINT;
+ALTER TABLE menu_upload_limits ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT;
+ALTER TABLE pdf_rejection_reasons ALTER COLUMN id TYPE BIGINT, ALTER COLUMN menu_version_id TYPE BIGINT, ALTER COLUMN rejected_by TYPE BIGINT;
+ALTER TABLE analytics_events ALTER COLUMN id TYPE BIGINT, ALTER COLUMN restaurant_id TYPE BIGINT, ALTER COLUMN company_id TYPE BIGINT;
+ALTER TABLE audit_logs ALTER COLUMN entity_id TYPE BIGINT, ALTER COLUMN performed_by TYPE BIGINT;
+ALTER TABLE login_sessions ALTER COLUMN id TYPE BIGINT, ALTER COLUMN user_id TYPE BIGINT;
+ALTER TABLE password_reset_tokens ALTER COLUMN id TYPE BIGINT, ALTER COLUMN user_id TYPE BIGINT;
+ALTER TABLE email_verification_codes ALTER COLUMN id TYPE BIGINT, ALTER COLUMN user_id TYPE BIGINT;
+
+ALTER TABLE companies ADD CONSTRAINT companies_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE company_users ADD CONSTRAINT company_users_company_id_fkey FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE company_users ADD CONSTRAINT company_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE restaurants ADD CONSTRAINT restaurants_company_id_fkey FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE restaurants ADD CONSTRAINT restaurants_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE restaurant_users ADD CONSTRAINT restaurant_users_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE restaurant_users ADD CONSTRAINT restaurant_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE restaurant_approval_requests ADD CONSTRAINT restaurant_approval_requests_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE restaurant_approval_requests ADD CONSTRAINT restaurant_approval_requests_company_id_fkey FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE restaurant_approval_requests ADD CONSTRAINT restaurant_approval_requests_requested_by_fkey FOREIGN KEY (requested_by) REFERENCES users(id);
+ALTER TABLE restaurant_approval_requests ADD CONSTRAINT restaurant_approval_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES users(id);
+ALTER TABLE slug_history ADD CONSTRAINT slug_history_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE slug_change_requests ADD CONSTRAINT slug_change_requests_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE slug_change_requests ADD CONSTRAINT slug_change_requests_requested_by_fkey FOREIGN KEY (requested_by) REFERENCES users(id);
+ALTER TABLE slug_change_requests ADD CONSTRAINT slug_change_requests_reviewed_by_fkey FOREIGN KEY (reviewed_by) REFERENCES users(id);
+ALTER TABLE menu_versions ADD CONSTRAINT menu_versions_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE menu_versions ADD CONSTRAINT menu_versions_created_by_fkey FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE menu_upload_limits ADD CONSTRAINT menu_upload_limits_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE;
+ALTER TABLE pdf_rejection_reasons ADD CONSTRAINT pdf_rejection_reasons_menu_version_id_fkey FOREIGN KEY (menu_version_id) REFERENCES menu_versions(id) ON DELETE CASCADE;
+ALTER TABLE pdf_rejection_reasons ADD CONSTRAINT pdf_rejection_reasons_rejected_by_fkey FOREIGN KEY (rejected_by) REFERENCES users(id);
+ALTER TABLE analytics_events ADD CONSTRAINT analytics_events_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE SET NULL;
+ALTER TABLE analytics_events ADD CONSTRAINT analytics_events_company_id_fkey FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL;
+ALTER TABLE audit_logs ADD CONSTRAINT audit_logs_performed_by_fkey FOREIGN KEY (performed_by) REFERENCES users(id);
+ALTER TABLE login_sessions ADD CONSTRAINT login_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE password_reset_tokens ADD CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE email_verification_codes ADD CONSTRAINT email_verification_codes_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;

@@ -1,0 +1,72 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Maven
+target/
+.mvn/wrapper/download/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.flattened-pom.xml
+.m2/
+
+# Build
+build/
+dist/
+*.jar
+*.war
+*.ear
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Storage
+/storage/
+/logs/
+*.log
+*.log.*
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Database
+postgres_data/
+redis_data/
+
+# Node (for frontend when added)
+node_modules/
+.npm-cache/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE specific
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Git
+.git

@@ -1,0 +1,57 @@
+name: Deploy QR Menu
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build application
+        run: mvn -B clean test package
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Test and build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run test -- --run
+          npm run build
+          npm run lint
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            test -f ~/.env
+            mkdir -p /opt/qr-menu
+            cd /opt/qr-menu
+            git pull --ff-only origin main
+            cp ~/.env /opt/qr-menu/.env
+            docker compose config >/tmp/qr-menu-compose.yml
+            chmod +x scripts/*.sh
+            docker compose up -d postgres
+            bash scripts/backup-db.sh
+            docker compose up -d --build
+            docker compose ps
