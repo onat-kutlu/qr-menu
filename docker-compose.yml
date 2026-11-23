@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./storage/backups:/backups
+      - ${STORAGE_HOST_PATH:-./storage}/backups:/backups
     ports:
       - "127.0.0.1:${DB_HOST_PORT:-5432}:5432"
     networks:
@@ -62,9 +62,9 @@ services:
       STORAGE_PATH: /app/storage
       JWT_SECRET: ${JWT_SECRET_KEY:-change-me}
     volumes:
-      - ./storage/logs:/app/storage/logs
-      - ./storage/menus:/app/storage/menus
-      - ./storage/backups:/app/storage/backups
+      - ${STORAGE_HOST_PATH:-./storage}/logs:/app/storage/logs
+      - ${STORAGE_HOST_PATH:-./storage}/menus:/app/storage/menus
+      - ${STORAGE_HOST_PATH:-./storage}/backups:/app/storage/backups
     ports:
       - "127.0.0.1:${SERVER_HOST_PORT:-8080}:8080"
     networks:
