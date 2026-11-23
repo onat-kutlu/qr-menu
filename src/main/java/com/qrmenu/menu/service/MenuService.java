@@ -183,6 +183,23 @@ public class MenuService {
         return mapToResponse(menuVersionRepository.save(menuVersion));
     }
 
+    @Transactional(readOnly = true)
+    public Path getPreviewPath(Long menuVersionId, Long currentUserId) {
+        User currentUser = userRepository.findActiveById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!currentUser.getHighestRole().isAdmin()) {
+            throw new ForbiddenException("Only platform admins can preview menus");
+        }
+
+        MenuVersion menuVersion = menuVersionRepository.findById(menuVersionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Menu version not found"));
+        Path previewPath = storagePathValidator.resolve(menuVersion.getFilePath());
+        if (!java.nio.file.Files.isRegularFile(previewPath)) {
+            throw new ResourceNotFoundException("Menu file not found");
+        }
+        return previewPath;
+    }
+
     public MenuVersionResponse rejectMenu(Long menuVersionId, RejectMenuRequest request, Long currentUserId) {
         User currentUser = userRepository.findActiveById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

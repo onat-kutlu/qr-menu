@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, deactivateUser, getApiErrorMessage, getUsers, updateUserRole } from '../lib/api-client';
+import { createUser, deactivateUser, getApiErrorMessage, getCompanies, getUsers, updateUserRole } from '../lib/api-client';
 import { toast } from 'sonner';
 import { getRoleLabel, useLocale } from '../lib/i18n';
 import { Pager, ResourceTable, ResourceToolbar } from '../components/ResourceTable';
@@ -12,6 +12,7 @@ export function UsersPage() {
   const queryClient = useQueryClient();
   const { t } = useLocale();
   const query = useQuery({ queryKey: ['admin-users', page, search], queryFn: () => getUsers(page, search) });
+  const companiesQuery = useQuery({ queryKey: ['admin-user-companies'], queryFn: () => getCompanies(0, '') });
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['admin-users'] });
   const createMutation = useMutation({
     mutationFn: () => createUser({ email: newUser.email, password: newUser.password, companyId: Number(newUser.companyId), role: newUser.role }),
@@ -35,7 +36,7 @@ export function UsersPage() {
       <form onSubmit={(event) => { event.preventDefault(); createMutation.mutate(); }} className="mb-5 grid gap-2 md:grid-cols-4">
         <input required type="email" value={newUser.email} onChange={(event) => setNewUser({ ...newUser, email: event.target.value })} placeholder={t('users.emailPlaceholder')} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
         <input required minLength={8} type="password" value={newUser.password} onChange={(event) => setNewUser({ ...newUser, password: event.target.value })} placeholder={t('users.temporaryPassword')} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
-        <input required type="number" value={newUser.companyId} onChange={(event) => setNewUser({ ...newUser, companyId: event.target.value })} placeholder={t('common.companyId')} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm" />
+        <select required value={newUser.companyId} onChange={(event) => setNewUser({ ...newUser, companyId: event.target.value })} className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"><option value="">{t('users.selectCompany')}</option>{companiesQuery.data?.items.map((company) => <option key={company.id} value={company.id}>{company.name}</option>)}</select>
         <div className="flex gap-2"><select value={newUser.role} onChange={(event) => setNewUser({ ...newUser, role: event.target.value })} className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-2 text-sm"><option value="COMPANY_USER">{t('users.companyUser')}</option><option value="COMPANY_ADMIN">{t('users.companyAdmin')}</option></select><button disabled={createMutation.isPending} className="rounded-lg bg-cyan-400 px-3 text-sm font-semibold text-slate-950">{t('common.create')}</button></div>
       </form>
       <ResourceToolbar search={search} onSearch={(value) => { setSearch(value); setPage(0); }} placeholder={t('users.searchPlaceholder')} />

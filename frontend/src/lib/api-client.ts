@@ -78,6 +78,8 @@ export const updateRestaurant = (id: number, payload: { status?: string; monthly
 export const approveRestaurant = (id: number) => apiClient.post<ApiResponse<Restaurant>>(`/admin/restaurants/approvals/${id}/approve`).then((response) => response.data.data);
 export const rejectRestaurant = (id: number, reason: string) => apiClient.post<ApiResponse<Restaurant>>(`/admin/restaurants/approvals/${id}/reject`, { reason }).then((response) => response.data.data);
 export const approveMenu = (id: number) => apiClient.post<ApiResponse<MenuApproval>>(`/admin/pdf-approvals/${id}/approve`).then((response) => response.data.data);
+export const publishMenu = (id: number) => apiClient.post<ApiResponse<MenuApproval>>(`/menus/${id}/publish`).then((response) => response.data.data);
+export const previewMenu = (id: number) => apiClient.get(`/admin/pdf-approvals/${id}/preview`, { responseType: 'blob' }).then((response) => URL.createObjectURL(response.data));
 export const rejectMenu = (id: number, category: string, reason: string) => apiClient.post<ApiResponse<MenuApproval>>(`/admin/pdf-approvals/${id}/reject`, { category, reason }).then((response) => response.data.data);
 export const approveSlugChange = (id: number) => apiClient.post<ApiResponse<SlugChange>>(`/admin/slug-change-requests/${id}/approve`).then((response) => response.data.data);
 

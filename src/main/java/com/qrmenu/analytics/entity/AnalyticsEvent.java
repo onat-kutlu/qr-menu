@@ -49,6 +49,7 @@ public class AnalyticsEvent {
     @Column(name = "user_agent", columnDefinition = "TEXT")
     private String userAgent;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "metadata", columnDefinition = "jsonb")
     private String metadata;
 
