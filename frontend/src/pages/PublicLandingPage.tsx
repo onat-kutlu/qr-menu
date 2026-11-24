@@ -9,7 +9,16 @@ function getVisitId() {
   const key = 'qr-menu-visit-id';
   const existing = localStorage.getItem(key);
   if (existing) return existing;
-  const created = crypto.randomUUID();
+  let created: string;
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    created = globalThis.crypto.randomUUID();
+  } else if (typeof globalThis.crypto?.getRandomValues === 'function') {
+    const bytes = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(bytes);
+    created = `visit-${Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+  } else {
+    created = `visit-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
   localStorage.setItem(key, created);
   return created;
 }
