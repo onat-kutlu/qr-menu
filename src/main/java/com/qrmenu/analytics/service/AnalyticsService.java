@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -21,10 +22,12 @@ public class AnalyticsService {
 
     private final AnalyticsEventRepository analyticsEventRepository;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recordLandingView(Restaurant restaurant, String visitId, String ipAddress, String userAgent) {
         recordEvent("LANDING_VIEW", restaurant, null, visitId, ipAddress, userAgent, null);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recordMenuOpen(Restaurant restaurant, MenuVersion.Language language, String visitId, String ipAddress, String userAgent) {
         recordEvent("MENU_OPEN", restaurant, language, visitId, ipAddress, userAgent, null);
     }

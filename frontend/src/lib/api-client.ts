@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
   },
 );
 
-export function getApiErrorMessage(error: unknown, fallback = 'İşlem tamamlanamadı.') {
+export function getApiErrorMessage(error: unknown, fallback = 'Operation could not be completed.') {
   const response = (error as { response?: { data?: { message?: string } } })?.response;
   return response?.data?.message || fallback;
 }
