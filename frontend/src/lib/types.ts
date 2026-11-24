@@ -63,6 +63,15 @@ export type Company = {
   updatedAt?: string;
 };
 
+export type CreateRestaurantPayload = {
+  companyId: number;
+  name: string;
+  slug: string;
+  description?: string;
+  address?: string;
+  phone?: string;
+};
+
 export type AdminUser = {
   id: number;
   email: string;

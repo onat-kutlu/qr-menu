@@ -87,6 +87,8 @@ export const getMyCompanies = () => apiClient.get<ApiResponse<Company[]>>('/comp
 export const getCompanyUsers = (companyId: number) => apiClient.get<ApiResponse<AdminUser[]>>(`/companies/${companyId}/users`).then((response) => response.data.data);
 export const createCompanyUser = (companyId: number, payload: { email: string; password: string; firstName?: string; lastName?: string; phone?: string }) => apiClient.post<ApiResponse<AdminUser>>(`/companies/${companyId}/users`, payload).then((response) => response.data.data);
 export const getCompanyRestaurants = (companyId: number) => apiClient.get<ApiResponse<Restaurant[]>>(`/restaurants/company/${companyId}`).then((response) => response.data.data);
+export const createRestaurant = (payload: import('./types').CreateRestaurantPayload) => apiClient.post<ApiResponse<Restaurant>>('/restaurants', payload).then((response) => response.data.data);
+export const getMenusForRestaurant = (restaurantId: number) => apiClient.get<ApiResponse<MenuApproval[]>>(`/menus/restaurant/${restaurantId}`).then((response) => response.data.data);
 export const uploadMenuFile = (restaurantId: number, language: string, file: File) => {
   const formData = new FormData();
   formData.append('restaurantId', String(restaurantId));
